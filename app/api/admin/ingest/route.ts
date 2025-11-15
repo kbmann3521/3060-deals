@@ -297,16 +297,17 @@ export async function POST(request: NextRequest) {
     const products = []
     const errors = []
 
-    for (const extracted of extractedData) {
+    for (let i = 0; i < extractedData.length; i++) {
       try {
+        const extracted = extractedData[i]
         if (!extracted || typeof extracted !== 'object') {
           errors.push('Invalid data format received from Firecrawl')
           continue
         }
 
-        // Find the URL from the first matching extraction
-        // Note: Firecrawl doesn't return URL in individual items, so we use the input URLs
-        const url = urls[0] // Use first URL as reference
+        // Map extracted product to corresponding URL
+        // Firecrawl returns results in the same order as input URLs
+        const url = newUrls[i] || newUrls[0]
         const product = mapFirecrawlToProduct(extracted, url)
         products.push(product)
       } catch (err) {
