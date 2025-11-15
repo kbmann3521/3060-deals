@@ -93,8 +93,13 @@ export default function DataIngestPage() {
             className="ingest-button"
             disabled={loading || urls.trim().length === 0}
           >
-            {loading ? 'Processing...' : 'Ingest Data'}
+            {loading ? 'Processing (this may take a few minutes)...' : 'Ingest Data'}
           </button>
+          {loading && (
+            <p className="form-hint" style={{ marginTop: '16px', color: '#58a6ff' }}>
+              ⏳ Firecrawl is extracting data from your URLs. This can take 1-5 minutes depending on page complexity. Please wait...
+            </p>
+          )}
         </form>
 
         <div className="ingest-results">
