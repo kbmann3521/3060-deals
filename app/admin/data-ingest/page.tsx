@@ -40,6 +40,8 @@ export default function DataIngestPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ urls: urlList }),
+        // Increase timeout to 10 minutes for long-running Firecrawl jobs
+        signal: AbortSignal.timeout(600000),
       })
 
       const data: IngestResult = await response.json()
@@ -52,7 +54,11 @@ export default function DataIngestPage() {
         setUrls('')
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      if (err instanceof Error && err.name === 'AbortError') {
+        setError('Request timed out after 10 minutes. Firecrawl may still be processing.')
+      } else {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      }
       setResult(null)
     } finally {
       setLoading(false)
