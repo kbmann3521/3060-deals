@@ -11,6 +11,7 @@ export type Product = {
   model_name: string
   gpu_model: string
   variant: string
+  family?: string
   memory_size_gb: number
   cooler_type: string
   price_usd: number
@@ -19,4 +20,6 @@ export type Product = {
   url: string
   affiliate_url: string | null
   fetched_at: string
+  created_at: string
+  updated_at: string
 }
