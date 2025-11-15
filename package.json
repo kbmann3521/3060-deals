@@ -1,12 +1,23 @@
 {
   "name": "gpu-project",
   "version": "1.0.0",
-  "description": "GPU Project",
-  "main": "index.js",
+  "description": "RTX 3060 Deals Database",
   "scripts": {
-    "dev": "node server.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@supabase/supabase-js": "^2.38.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "@types/node": "^20.4.5",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6"
+  }
 }
