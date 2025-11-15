@@ -14,6 +14,7 @@ export default function Home() {
     cooler_type: '',
     is_oc: '',
     family: '',
+    special_features: '',
     sortBy: 'price',
     sortOrder: 'asc',
   })
@@ -23,6 +24,7 @@ export default function Home() {
     memories: new Set<number>(),
     coolerTypes: new Set<string>(),
     families: new Set<string>(),
+    specialFeatures: new Set<string>(),
   })
 
   // Fetch products
@@ -44,12 +46,20 @@ export default function Home() {
         const memories = new Set<number>()
         const coolerTypes = new Set<string>()
         const families = new Set<string>()
+        const specialFeatures = new Set<string>()
 
         data.products.forEach((product: Product) => {
           if (product.brand) brands.add(product.brand)
           if (product.memory_size_gb) memories.add(product.memory_size_gb)
           if (product.cooler_type) coolerTypes.add(product.cooler_type)
           if (product.family) families.add(product.family)
+          if (product.special_features) {
+            // Split comma-separated special features for filtering
+            product.special_features.split(',').forEach((feature) => {
+              const trimmedFeature = feature.trim()
+              if (trimmedFeature) specialFeatures.add(trimmedFeature)
+            })
+          }
         })
 
         setFilterOptions({
@@ -57,6 +67,7 @@ export default function Home() {
           memories,
           coolerTypes,
           families,
+          specialFeatures,
         })
       }
     } catch (error) {
@@ -105,6 +116,7 @@ export default function Home() {
       cooler_type: '',
       is_oc: '',
       family: '',
+      special_features: '',
       sortBy: 'price',
       sortOrder: 'asc',
     })
@@ -213,6 +225,24 @@ export default function Home() {
           </select>
         </div>
 
+        <div className="filter-group">
+          <label>Special Features</label>
+          <select
+            value={filters.special_features}
+            onChange={(e) => handleFilterChange('special_features', e.target.value)}
+            className="filter-select"
+          >
+            <option value="">All Features</option>
+            {Array.from(filterOptions.specialFeatures)
+              .sort()
+              .map((feature) => (
+                <option key={feature} value={feature}>
+                  {feature}
+                </option>
+              ))}
+          </select>
+        </div>
+
         <button onClick={resetFilters} className="reset-button">
           Reset Filters
         </button>
@@ -227,7 +257,9 @@ export default function Home() {
               <th onClick={() => handleSort('brand')}>
                 Brand {filters.sortBy === 'brand' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
-              <th>Title</th>
+              <th onClick={() => handleSort('retailer')}>
+                Retailer {filters.sortBy === 'retailer' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+              </th>
               <th onClick={() => handleSort('family')}>
                 Family {filters.sortBy === 'family' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
@@ -252,11 +284,7 @@ export default function Home() {
               products.map((product) => (
                 <tr key={product.id}>
                   <td className="brand-cell">{product.brand}</td>
-                  <td className="model-cell">
-                    <div className="model-info">
-                      <div className="model-name">{product.product_title}</div>
-                    </div>
-                  </td>
+                  <td className="retailer-cell">{product.retailer}</td>
                   <td className="family-cell">{product.family || '-'}</td>
                   <td>{product.memory_size_gb}GB</td>
                   <td>{product.cooler_type}</td>
