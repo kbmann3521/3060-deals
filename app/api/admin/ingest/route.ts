@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase-client'
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY
 const FIRECRAWL_API_URL = 'https://api.firecrawl.dev/v2/extract'
 const FIRECRAWL_POLL_INTERVAL = 2000 // 2 seconds
-const FIRECRAWL_POLL_TIMEOUT = 300000 // 5 minutes
+const FIRECRAWL_POLL_TIMEOUT = 600000 // 10 minutes
 
 interface ExtractedProduct {
   brand: string
