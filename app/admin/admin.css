@@ -1,0 +1,126 @@
+.admin-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.admin-header {
+  margin-bottom: 40px;
+}
+
+.admin-header h1 {
+  font-size: 1.875rem;
+  margin-bottom: 8px;
+  color: #e6edf3;
+}
+
+.admin-header p {
+  color: #8b949e;
+  font-size: 1rem;
+}
+
+.admin-form {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #e6edf3;
+}
+
+.form-input {
+  padding: 12px 16px;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  background-color: #0d1117;
+  color: #e6edf3;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.form-input::placeholder {
+  color: #6e7681;
+}
+
+.form-input:hover:not(:disabled) {
+  border-color: #58a6ff;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submit-button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
+  color: #ffffff;
+  border: 1px solid #2ea043;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 160, 67, 0.4);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.success-message {
+  padding: 12px 16px;
+  background-color: #1c442e;
+  border: 1px solid #2ea043;
+  border-radius: 6px;
+  color: #3fb950;
+  font-size: 0.9rem;
+}
+
+.error-message {
+  padding: 12px 16px;
+  background-color: #5d1f1a;
+  border: 1px solid #da3633;
+  border-radius: 6px;
+  color: #f85149;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 24px 16px;
+  }
+
+  .admin-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .admin-form {
+    padding: 20px;
+  }
+}
