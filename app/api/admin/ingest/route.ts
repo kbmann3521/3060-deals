@@ -179,12 +179,27 @@ export async function POST(request: NextRequest) {
     })
 
     if (!submitResponse.ok) {
-      const errorText = await submitResponse.text()
-      console.error('Firecrawl submission error:', errorText)
+      let errorMessage = `Firecrawl API returned ${submitResponse.status}`
+
+      try {
+        const errorText = await submitResponse.text()
+        console.error('Firecrawl submission error:', errorText)
+
+        if (submitResponse.status === 402) {
+          errorMessage = 'Firecrawl account has insufficient credits. Please check your Firecrawl API key and account balance.'
+        } else if (submitResponse.status === 401) {
+          errorMessage = 'Firecrawl API key is invalid or expired.'
+        } else if (errorText) {
+          errorMessage = `Firecrawl error: ${errorText}`
+        }
+      } catch (err) {
+        console.error('Failed to read error response:', err)
+      }
+
       return NextResponse.json(
         {
           success: false,
-          message: `Failed to submit extraction job: ${submitResponse.status}`,
+          message: errorMessage,
         },
         { status: submitResponse.status }
       )
