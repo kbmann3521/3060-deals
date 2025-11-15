@@ -332,7 +332,7 @@ export async function POST(request: NextRequest) {
     // Insert products into Supabase using service role (bypasses RLS)
     console.log('Inserting', products.length, 'products into Supabase')
 
-    const { error: insertError, data: insertedData } = await supabaseAdmin
+    const { error: insertError } = await supabaseAdmin
       .from('products')
       .insert(products)
       .select()
