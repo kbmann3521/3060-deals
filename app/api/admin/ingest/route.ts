@@ -30,20 +30,18 @@ interface FirecrawlJobStatus {
 }
 
 function mapFirecrawlToProduct(extracted: ExtractedProduct, url: string) {
-  // Only map the fields that exist in the products table schema
-  // Omit: is_oc, family, in_stock, product_title (these are extra Firecrawl fields)
+  // Map directly to Firecrawl schema field names for consistency
   return {
     brand: extracted.brand,
-    model_name: extracted.product_title,
-    gpu_model: 'RTX 3060',
-    variant: extracted.family, // Use family as variant
-    memory_size_gb: extracted.memory_size_gb,
+    is_oc: extracted.is_oc,
+    price: extracted.price,
+    family: extracted.family,
+    in_stock: extracted.in_stock,
     cooler_type: extracted.cooler_type,
-    price_usd: extracted.price,
-    stock_status: extracted.in_stock ? 'in_stock' : 'out_of_stock',
+    product_title: extracted.product_title,
+    memory_size_gb: extracted.memory_size_gb,
     retailer: new URL(url).hostname?.replace('www.', '') || 'unknown',
     url: url,
-    affiliate_url: null,
     fetched_at: new Date().toISOString(),
   }
 }
