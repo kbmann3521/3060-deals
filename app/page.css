@@ -1,3 +1,24 @@
+.page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.page-header {
+  margin-bottom: 40px;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: #e6edf3;
+}
+
+.page-header p {
+  color: #8b949e;
+  font-size: 1rem;
+}
+
 .search-bar {
   margin-bottom: 32px;
   display: flex;
