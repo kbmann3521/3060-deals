@@ -129,12 +129,48 @@ export async function POST(request: NextRequest) {
       }),
     })
 
-    const firecrawlData: FirecrawlResponse = await firecrawlResponse.json()
-
-    if (!firecrawlData.success || !firecrawlData.data?.results) {
+    if (!firecrawlResponse.ok) {
+      const errorText = await firecrawlResponse.text()
+      console.error('Firecrawl error response:', errorText)
       return NextResponse.json(
-        { success: false, message: 'Failed to extract data from URLs' },
+        {
+          success: false,
+          message: `Firecrawl API error: ${firecrawlResponse.status}`,
+        },
+        { status: firecrawlResponse.status }
+      )
+    }
+
+    let firecrawlData: FirecrawlResponse
+    try {
+      firecrawlData = await firecrawlResponse.json()
+    } catch (parseError) {
+      console.error('Failed to parse Firecrawl response:', parseError)
+      return NextResponse.json(
+        { success: false, message: 'Failed to parse Firecrawl response' },
         { status: 500 }
+      )
+    }
+
+    if (!firecrawlData.success) {
+      console.error('Firecrawl extraction failed:', firecrawlData)
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Firecrawl extraction failed',
+          errors: ['Check that URLs are valid and accessible'],
+        },
+        { status: 400 }
+      )
+    }
+
+    if (!firecrawlData.data?.results) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'No results returned from Firecrawl',
+        },
+        { status: 400 }
       )
     }
 
