@@ -58,21 +58,23 @@ async function waitForFirecrawlJob(jobId: string): Promise<ExtractedProduct[]> {
       },
     })
 
-    if (!statusResponse.ok) {
-      let errorMessage = `Firecrawl status check failed: ${statusResponse.status}`
-      try {
-        const errorText = await statusResponse.text()
-        console.error('Firecrawl status error:', statusResponse.status, errorText)
-        if (statusResponse.status === 402) {
-          errorMessage = 'Firecrawl account ran out of credits during processing'
-        }
-      } catch (err) {
-        console.error('Failed to read status error response:', err)
-      }
-      throw new Error(errorMessage)
+    let status: FirecrawlJobStatus
+
+    try {
+      status = await statusResponse.json()
+    } catch (parseError) {
+      console.error('Failed to parse Firecrawl status response:', parseError)
+      throw new Error('Invalid response from Firecrawl status endpoint')
     }
 
-    const status: FirecrawlJobStatus = await statusResponse.json()
+    if (!statusResponse.ok) {
+      let errorMessage = `Firecrawl status check failed: ${statusResponse.status}`
+      if (statusResponse.status === 402) {
+        errorMessage = 'Firecrawl account ran out of credits during processing'
+      }
+      console.error('Firecrawl status error:', errorMessage)
+      throw new Error(errorMessage)
+    }
 
     if (status.status === 'completed') {
       if (!status.data) {
@@ -186,34 +188,8 @@ export async function POST(request: NextRequest) {
       }),
     })
 
-    if (!submitResponse.ok) {
-      let errorMessage = `Firecrawl API returned ${submitResponse.status}`
-
-      try {
-        const errorText = await submitResponse.text()
-        console.error('Firecrawl submission error:', errorText)
-
-        if (submitResponse.status === 402) {
-          errorMessage = 'Firecrawl account has insufficient credits. Please check your Firecrawl API key and account balance.'
-        } else if (submitResponse.status === 401) {
-          errorMessage = 'Firecrawl API key is invalid or expired.'
-        } else if (errorText) {
-          errorMessage = `Firecrawl error: ${errorText}`
-        }
-      } catch (err) {
-        console.error('Failed to read error response:', err)
-      }
-
-      return NextResponse.json(
-        {
-          success: false,
-          message: errorMessage,
-        },
-        { status: submitResponse.status }
-      )
-    }
-
     let jobData: FirecrawlJobSubmission
+
     try {
       jobData = await submitResponse.json()
     } catch (parseError) {
@@ -221,6 +197,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, message: 'Failed to parse Firecrawl response' },
         { status: 500 }
+      )
+    }
+
+    if (!submitResponse.ok) {
+      let errorMessage = `Firecrawl API returned ${submitResponse.status}`
+
+      if (submitResponse.status === 402) {
+        errorMessage = 'Firecrawl account has insufficient credits. Please check your Firecrawl API key and account balance.'
+      } else if (submitResponse.status === 401) {
+        errorMessage = 'Firecrawl API key is invalid or expired.'
+      } else {
+        errorMessage = `Firecrawl error: ${submitResponse.status}`
+      }
+
+      console.error('Firecrawl submission error:', errorMessage)
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: errorMessage,
+        },
+        { status: submitResponse.status }
       )
     }
 
