@@ -297,17 +297,31 @@
 
 @media (max-width: 1024px) {
   .filters-container {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    padding: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .filter-select,
+  .filter-input {
+    font-size: 0.75rem;
+    padding: 6px 8px;
+    height: 32px;
+  }
+
+  .reset-button {
+    height: 32px;
+    padding: 6px 10px;
+    font-size: 0.7rem;
   }
 
   .products-table {
-    font-size: 0.875rem;
+    font-size: 0.85rem;
   }
 
   .products-table th,
   .products-table td {
-    padding: 14px;
+    padding: 12px;
   }
 }
 
@@ -320,9 +334,35 @@
     font-size: 1.5rem;
   }
 
+  .page-header {
+    margin-bottom: 24px;
+  }
+
+  .search-bar {
+    margin-bottom: 24px;
+  }
+
   .filters-container {
-    grid-template-columns: 1fr;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .filter-group label {
+    font-size: 0.7rem;
+  }
+
+  .filter-select,
+  .filter-input {
+    font-size: 0.7rem;
+    padding: 6px 8px;
+    height: 30px;
+  }
+
+  .reset-button {
+    height: 30px;
+    padding: 4px 8px;
+    font-size: 0.65rem;
   }
 
   .table-container {
@@ -330,13 +370,13 @@
   }
 
   .products-table {
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     min-width: 800px;
   }
 
   .products-table th,
   .products-table td {
-    padding: 12px;
+    padding: 10px;
   }
 
   .model-cell {
@@ -344,8 +384,8 @@
   }
 
   .visit-button {
-    padding: 6px 12px;
-    font-size: 0.75rem;
+    padding: 4px 8px;
+    font-size: 0.65rem;
   }
 }
 
@@ -359,35 +399,62 @@
   }
 
   .page-header p {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+  }
+
+  .page-header {
+    margin-bottom: 16px;
+  }
+
+  .search-bar {
+    margin-bottom: 12px;
   }
 
   .search-input {
-    font-size: 0.9375rem;
-    padding: 10px 12px;
+    font-size: 0.875rem;
+    padding: 8px 10px;
+    height: 36px;
   }
 
   .filters-container {
-    padding: 16px;
+    padding: 10px;
+    gap: 6px;
+  }
+
+  .filter-group label {
+    font-size: 0.65rem;
+  }
+
+  .filter-select,
+  .filter-input {
+    font-size: 0.65rem;
+    padding: 4px 6px;
+    height: 28px;
+  }
+
+  .reset-button {
+    height: 28px;
+    padding: 3px 6px;
+    font-size: 0.6rem;
   }
 
   .products-table {
-    font-size: 0.75rem;
-    min-width: 700px;
+    font-size: 0.7rem;
+    min-width: 600px;
   }
 
   .products-table th,
   .products-table td {
-    padding: 10px;
+    padding: 8px;
   }
 
   .stock-badge {
-    padding: 4px 8px;
-    font-size: 0.7rem;
+    padding: 3px 6px;
+    font-size: 0.6rem;
   }
 
   .visit-button {
-    padding: 5px 10px;
-    font-size: 0.7rem;
+    padding: 3px 6px;
+    font-size: 0.6rem;
   }
 }
