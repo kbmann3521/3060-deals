@@ -3,6 +3,8 @@ import { supabase } from '@/lib/supabase-client'
 
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY
 const FIRECRAWL_API_URL = 'https://api.firecrawl.dev/v2/extract'
+const FIRECRAWL_POLL_INTERVAL = 2000 // 2 seconds
+const FIRECRAWL_POLL_TIMEOUT = 300000 // 5 minutes
 
 interface ExtractedProduct {
   brand: string
@@ -15,16 +17,16 @@ interface ExtractedProduct {
   memory_size_gb: number
 }
 
-interface FirecrawlResponse {
+interface FirecrawlJobSubmission {
   success: boolean
-  data: {
-    results: Array<{
-      url: string
-      markdown?: string
-      json?: ExtractedProduct
-      extract?: ExtractedProduct
-    }>
-  }
+  id: string
+}
+
+interface FirecrawlJobStatus {
+  success: boolean
+  status: 'processing' | 'completed' | 'failed' | 'cancelled'
+  data?: ExtractedProduct | ExtractedProduct[]
+  expiresAt?: string
 }
 
 function mapFirecrawlToProduct(extracted: ExtractedProduct, url: string) {
@@ -42,6 +44,51 @@ function mapFirecrawlToProduct(extracted: ExtractedProduct, url: string) {
     affiliate_url: null,
     fetched_at: new Date().toISOString(),
   }
+}
+
+async function waitForFirecrawlJob(jobId: string): Promise<ExtractedProduct[]> {
+  const startTime = Date.now()
+
+  while (Date.now() - startTime < FIRECRAWL_POLL_TIMEOUT) {
+    const statusResponse = await fetch(`${FIRECRAWL_API_URL}/${jobId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!statusResponse.ok) {
+      const errorText = await statusResponse.text()
+      console.error('Firecrawl status check failed:', errorText)
+      throw new Error(`Failed to check job status: ${statusResponse.status}`)
+    }
+
+    const status: FirecrawlJobStatus = await statusResponse.json()
+
+    if (status.status === 'completed') {
+      if (!status.data) {
+        throw new Error('Job completed but no data returned')
+      }
+
+      // Handle both single object and array responses
+      const dataArray = Array.isArray(status.data) ? status.data : [status.data]
+      return dataArray
+    }
+
+    if (status.status === 'failed') {
+      throw new Error('Firecrawl extraction job failed')
+    }
+
+    if (status.status === 'cancelled') {
+      throw new Error('Firecrawl extraction job was cancelled')
+    }
+
+    // Still processing, wait before polling again
+    await new Promise(resolve => setTimeout(resolve, FIRECRAWL_POLL_INTERVAL))
+  }
+
+  throw new Error('Firecrawl job timed out after 5 minutes')
 }
 
 export async function POST(request: NextRequest) {
@@ -63,8 +110,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Call Firecrawl EXTRACT endpoint
-    const firecrawlResponse = await fetch(FIRECRAWL_API_URL, {
+    // Submit extraction job to Firecrawl
+    console.log('Submitting extraction job for URLs:', urls)
+
+    const submitResponse = await fetch(FIRECRAWL_API_URL, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
@@ -129,78 +178,76 @@ export async function POST(request: NextRequest) {
       }),
     })
 
-    if (!firecrawlResponse.ok) {
-      const errorText = await firecrawlResponse.text()
-      console.error('Firecrawl error response:', errorText)
+    if (!submitResponse.ok) {
+      const errorText = await submitResponse.text()
+      console.error('Firecrawl submission error:', errorText)
       return NextResponse.json(
         {
           success: false,
-          message: `Firecrawl API error: ${firecrawlResponse.status}`,
+          message: `Failed to submit extraction job: ${submitResponse.status}`,
         },
-        { status: firecrawlResponse.status }
+        { status: submitResponse.status }
       )
     }
 
-    let firecrawlData: FirecrawlResponse
+    let jobData: FirecrawlJobSubmission
     try {
-      firecrawlData = await firecrawlResponse.json()
+      jobData = await submitResponse.json()
     } catch (parseError) {
-      console.error('Failed to parse Firecrawl response:', parseError)
+      console.error('Failed to parse Firecrawl submission response:', parseError)
       return NextResponse.json(
         { success: false, message: 'Failed to parse Firecrawl response' },
         { status: 500 }
       )
     }
 
-    if (!firecrawlData.success) {
-      console.error('Firecrawl extraction failed:', firecrawlData)
+    if (!jobData.success || !jobData.id) {
+      console.error('Firecrawl submission failed:', jobData)
       return NextResponse.json(
         {
           success: false,
-          message: 'Firecrawl extraction failed',
-          errors: ['Check that URLs are valid and accessible'],
+          message: 'Firecrawl failed to create extraction job',
         },
         { status: 400 }
       )
     }
 
-    if (!firecrawlData.data?.results) {
+    console.log('Job submitted with ID:', jobData.id)
+
+    // Wait for the job to complete
+    let extractedData: ExtractedProduct[]
+    try {
+      extractedData = await waitForFirecrawlJob(jobData.id)
+    } catch (pollError) {
+      console.error('Error waiting for Firecrawl job:', pollError)
       return NextResponse.json(
         {
           success: false,
-          message: 'No results returned from Firecrawl',
-        },
-        { status: 400 }
-      )
-    }
-
-    // Process results and insert into Supabase
-    const products = []
-    const errors = []
-
-    if (!Array.isArray(firecrawlData.data.results)) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Invalid response format from Firecrawl',
+          message: `Extraction job error: ${pollError instanceof Error ? pollError.message : 'Unknown error'}`,
         },
         { status: 500 }
       )
     }
 
-    for (const result of firecrawlData.data.results) {
+    // Process extracted data and prepare products
+    const products = []
+    const errors = []
+
+    for (const extracted of extractedData) {
       try {
-        const extracted = result.extract || result.json
-        if (!extracted) {
-          errors.push(`No data extracted from: ${result.url}`)
+        if (!extracted || typeof extracted !== 'object') {
+          errors.push('Invalid data format received from Firecrawl')
           continue
         }
 
-        const product = mapFirecrawlToProduct(extracted, result.url)
+        // Find the URL from the first matching extraction
+        // Note: Firecrawl doesn't return URL in individual items, so we use the input URLs
+        const url = urls[0] // Use first URL as reference
+        const product = mapFirecrawlToProduct(extracted, url)
         products.push(product)
       } catch (err) {
         errors.push(
-          `Error processing ${result.url}: ${err instanceof Error ? err.message : 'Unknown error'}`
+          `Error processing extracted data: ${err instanceof Error ? err.message : 'Unknown error'}`
         )
       }
     }
@@ -218,6 +265,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert products into Supabase
+    console.log('Inserting', products.length, 'products into Supabase')
+
     const { error: insertError, data: insertedData } = await supabase
       .from('products')
       .insert(products)
@@ -234,6 +283,8 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    console.log('Successfully inserted', products.length, 'products')
 
     return NextResponse.json({
       success: true,
