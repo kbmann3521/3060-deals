@@ -120,8 +120,51 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Submit extraction job to Firecrawl
-    console.log('Submitting extraction job for URLs:', urls)
+    // Check for existing URLs in the database
+    console.log('Checking for duplicate URLs in database...')
+    const { data: existingProducts, error: queryError } = await supabaseAdmin
+      .from('products')
+      .select('url')
+      .in('url', urls)
+
+    if (queryError) {
+      console.error('Error checking for existing URLs:', queryError)
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Database error while checking for duplicates: ${queryError.message}`,
+        },
+        { status: 500 }
+      )
+    }
+
+    const existingUrls = new Set((existingProducts || []).map((p) => p.url))
+    const duplicateUrls = urls.filter((url) => existingUrls.has(url))
+    const newUrls = urls.filter((url) => !existingUrls.has(url))
+
+    // Return early if all URLs are duplicates
+    if (newUrls.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `All ${urls.length} URL(s) already exist in the database`,
+          duplicateCount: duplicateUrls.length,
+          duplicateUrls,
+          productsAdded: 0,
+        },
+        { status: 400 }
+      )
+    }
+
+    // Log duplicate detection
+    if (duplicateUrls.length > 0) {
+      console.log(
+        `Found ${duplicateUrls.length} duplicate URL(s), processing ${newUrls.length} new URL(s)`
+      )
+    }
+
+    // Submit extraction job to Firecrawl for new URLs only
+    console.log('Submitting extraction job for URLs:', newUrls)
 
     const submitResponse = await fetch(FIRECRAWL_API_URL, {
       method: 'POST',
