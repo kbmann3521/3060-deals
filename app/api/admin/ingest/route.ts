@@ -350,12 +350,24 @@ export async function POST(request: NextRequest) {
 
     console.log('Successfully inserted', products.length, 'products')
 
-    return NextResponse.json({
+    const response: any = {
       success: true,
       message: `Successfully added ${products.length} product(s) to the database`,
       productsAdded: products.length,
-      errors: errors.length > 0 ? errors : undefined,
-    })
+    }
+
+    // Include duplicate information if there were any
+    if (duplicateUrls.length > 0) {
+      response.message += ` (${duplicateUrls.length} duplicate URL(s) were skipped)`
+      response.duplicateCount = duplicateUrls.length
+      response.duplicateUrls = duplicateUrls
+    }
+
+    if (errors.length > 0) {
+      response.errors = errors
+    }
+
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Data ingestion error:', error)
     return NextResponse.json(
