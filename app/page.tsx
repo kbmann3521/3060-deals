@@ -10,13 +10,11 @@ export default function Home() {
   const [filters, setFilters] = useState({
     search: '',
     brand: '',
-    memory: '',
-    minPrice: '',
-    maxPrice: '',
-    coolerType: '',
-    stockStatus: '',
-    retailer: '',
-    sortBy: 'price_usd',
+    memory_size_gb: '',
+    cooler_type: '',
+    is_oc: '',
+    family: '',
+    sortBy: 'price',
     sortOrder: 'asc',
   })
 
@@ -24,8 +22,7 @@ export default function Home() {
     brands: new Set<string>(),
     memories: new Set<number>(),
     coolerTypes: new Set<string>(),
-    stockStatuses: new Set<string>(),
-    retailers: new Set<string>(),
+    families: new Set<string>(),
   })
 
   // Fetch products
@@ -46,23 +43,20 @@ export default function Home() {
         const brands = new Set<string>()
         const memories = new Set<number>()
         const coolerTypes = new Set<string>()
-        const stockStatuses = new Set<string>()
-        const retailers = new Set<string>()
+        const families = new Set<string>()
 
         data.products.forEach((product: Product) => {
           if (product.brand) brands.add(product.brand)
           if (product.memory_size_gb) memories.add(product.memory_size_gb)
           if (product.cooler_type) coolerTypes.add(product.cooler_type)
-          if (product.stock_status) stockStatuses.add(product.stock_status)
-          if (product.retailer) retailers.add(product.retailer)
+          if (product.family) families.add(product.family)
         })
 
         setFilterOptions({
           brands,
           memories,
           coolerTypes,
-          stockStatuses,
-          retailers,
+          families,
         })
       }
     } catch (error) {
@@ -107,19 +101,13 @@ export default function Home() {
     setFilters({
       search: '',
       brand: '',
-      memory: '',
-      minPrice: '',
-      maxPrice: '',
-      coolerType: '',
-      stockStatus: '',
-      retailer: '',
-      sortBy: 'price_usd',
+      memory_size_gb: '',
+      cooler_type: '',
+      is_oc: '',
+      family: '',
+      sortBy: 'price',
       sortOrder: 'asc',
     })
-  }
-
-  const isInStock = (status: string) => {
-    return status.toLowerCase().includes('in stock') || status.toLowerCase() === 'available'
   }
 
   return (
@@ -132,7 +120,7 @@ export default function Home() {
       <div className="search-bar">
         <input
           type="text"
-          placeholder="Search by brand, model, or variant..."
+          placeholder="Search by brand, product title, or family..."
           value={filters.search}
           onChange={(e) => handleSearch(e.target.value)}
           className="search-input"
@@ -161,8 +149,8 @@ export default function Home() {
         <div className="filter-group">
           <label>Memory</label>
           <select
-            value={filters.memory}
-            onChange={(e) => handleFilterChange('memory', e.target.value)}
+            value={filters.memory_size_gb}
+            onChange={(e) => handleFilterChange('memory_size_gb', e.target.value)}
             className="filter-select"
           >
             <option value="">All Sizes</option>
@@ -179,8 +167,8 @@ export default function Home() {
         <div className="filter-group">
           <label>Cooler Type</label>
           <select
-            value={filters.coolerType}
-            onChange={(e) => handleFilterChange('coolerType', e.target.value)}
+            value={filters.cooler_type}
+            onChange={(e) => handleFilterChange('cooler_type', e.target.value)}
             className="filter-select"
           >
             <option value="">All Types</option>
@@ -195,60 +183,34 @@ export default function Home() {
         </div>
 
         <div className="filter-group">
-          <label>Stock Status</label>
+          <label>Overclock</label>
           <select
-            value={filters.stockStatus}
-            onChange={(e) => handleFilterChange('stockStatus', e.target.value)}
+            value={filters.is_oc}
+            onChange={(e) => handleFilterChange('is_oc', e.target.value)}
             className="filter-select"
           >
-            <option value="">All Statuses</option>
-            {Array.from(filterOptions.stockStatuses)
-              .sort()
-              .map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
+            <option value="">All</option>
+            <option value="true">Overclocked</option>
+            <option value="false">Stock</option>
           </select>
         </div>
 
         <div className="filter-group">
-          <label>Retailer</label>
+          <label>Family</label>
           <select
-            value={filters.retailer}
-            onChange={(e) => handleFilterChange('retailer', e.target.value)}
+            value={filters.family}
+            onChange={(e) => handleFilterChange('family', e.target.value)}
             className="filter-select"
           >
-            <option value="">All Retailers</option>
-            {Array.from(filterOptions.retailers)
+            <option value="">All Families</option>
+            {Array.from(filterOptions.families)
               .sort()
-              .map((retailer) => (
-                <option key={retailer} value={retailer}>
-                  {retailer}
+              .map((family) => (
+                <option key={family} value={family}>
+                  {family}
                 </option>
               ))}
           </select>
-        </div>
-
-        <div className="filter-group">
-          <label>Price Range</label>
-          <div className="price-inputs">
-            <input
-              type="number"
-              placeholder="Min"
-              value={filters.minPrice}
-              onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-              className="filter-input"
-            />
-            <span className="price-separator">-</span>
-            <input
-              type="number"
-              placeholder="Max"
-              value={filters.maxPrice}
-              onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-              className="filter-input"
-            />
-          </div>
         </div>
 
         <button onClick={resetFilters} className="reset-button">
@@ -265,20 +227,20 @@ export default function Home() {
               <th onClick={() => handleSort('brand')}>
                 Brand {filters.sortBy === 'brand' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
-              <th>Model</th>
+              <th>Title</th>
               <th onClick={() => handleSort('memory_size_gb')}>
                 Memory {filters.sortBy === 'memory_size_gb' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
               <th onClick={() => handleSort('cooler_type')}>
                 Cooler {filters.sortBy === 'cooler_type' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
-              <th onClick={() => handleSort('price_usd')}>
-                Price {filters.sortBy === 'price_usd' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+              <th onClick={() => handleSort('is_oc')}>
+                OC {filters.sortBy === 'is_oc' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
-              <th onClick={() => handleSort('stock_status')}>
-                Stock {filters.sortBy === 'stock_status' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+              <th onClick={() => handleSort('price')}>
+                Price {filters.sortBy === 'price' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
-              <th>Retailer</th>
+              <th>Stock</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -289,19 +251,19 @@ export default function Home() {
                   <td className="brand-cell">{product.brand}</td>
                   <td className="model-cell">
                     <div className="model-info">
-                      <div className="model-name">{product.model_name}</div>
-                      {product.variant && <div className="variant">{product.variant}</div>}
+                      <div className="model-name">{product.product_title}</div>
+                      {product.family && <div className="variant">{product.family}</div>}
                     </div>
                   </td>
                   <td>{product.memory_size_gb}GB</td>
                   <td>{product.cooler_type}</td>
-                  <td className="price-cell">${product.price_usd.toFixed(2)}</td>
+                  <td>{product.is_oc ? 'Yes' : 'No'}</td>
+                  <td className="price-cell">${product.price.toFixed(2)}</td>
                   <td>
-                    <span className={`stock-badge ${isInStock(product.stock_status) ? 'in-stock' : 'out-of-stock'}`}>
-                      {product.stock_status}
+                    <span className={`stock-badge ${product.in_stock ? 'in-stock' : 'out-of-stock'}`}>
+                      {product.in_stock ? 'In Stock' : 'Out of Stock'}
                     </span>
                   </td>
-                  <td className="retailer-cell">{product.retailer}</td>
                   <td className="action-cell">
                     <a href={product.url} target="_blank" rel="noopener noreferrer" className="visit-button">
                       Visit
