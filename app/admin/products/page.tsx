@@ -1,11 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import '@/app/admin/admin.css'
 
 export default function AdminProductsPage() {
-  const router = useRouter()
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
