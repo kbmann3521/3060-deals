@@ -15,6 +15,7 @@ interface ExtractedProduct {
   cooler_type: string
   product_title: string
   memory_size_gb: number
+  special_features: string
 }
 
 interface FirecrawlJobSubmission {
@@ -40,6 +41,7 @@ function mapFirecrawlToProduct(extracted: ExtractedProduct, url: string) {
     cooler_type: extracted.cooler_type,
     product_title: extracted.product_title,
     memory_size_gb: extracted.memory_size_gb,
+    special_features: extracted.special_features,
     retailer: new URL(url).hostname?.replace('www.', '') || 'unknown',
     url: url,
     fetched_at: new Date().toISOString(),
@@ -174,7 +176,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         urls: newUrls,
-        prompt: 'cooler_type is the number of fans ("dual" or "tripple"). family options include: Ventus, Gaming, Twin Edge, Eagle, Windforce, Aero ITX, Phoenix, TUF, ROG Strix, XLR8, Revel, Uprising, Epic-X, AMP, AMP White, Vision, XC, XC Black, NB, BattleAx, iChill, EX, EXOC, SG, Ultra, White Edition, Sakura, Cute Edition. If none are found, use "Base" as the family.',
+        prompt: 'cooler_type is the number of fans ("dual" or "tripple"). family options include: Ventus, Gaming, Twin Edge, Eagle, Windforce, Aero ITX, Phoenix, TUF, ROG Strix, XLR8, Revel, Uprising, Epic-X, AMP, AMP White, Vision, XC, XC Black, NB, BattleAx, iChill, EX, EXOC, SG, Ultra, White Edition, Sakura, Cute Edition. If no family is found, use "Base" as the family. special_features include: IceStorm, IceStorm 2.0, FireStorm Software, FREEZE Fan Stop, Active Fan Control, Axial-Tech Fans, 0dB Technology, MaxContact, AURA Sync RGB, Dual BIOS, Torx Fan 3.0, Torx Fan 4.0, Twin Frozr, Zero Frozr, TRI FROZR 2, Core Pipe, Mystic Light RGB, Windforce Cooling, Alternate Spinning, 3D Active Fan, Screen Cooling, RGB Fusion, EPIC-X RGB, iGame Center, FrostBlade Fans. If no special features found, use None',
         schema: {
           type: 'object',
           properties: {
@@ -210,6 +212,10 @@ export async function POST(request: NextRequest) {
             memory_size_gb: {
               type: 'number',
               description: 'GPU memory in GB',
+            },
+            special_features: {
+              type: 'string',
+              description: 'Special cooling or technology features',
             },
           },
           required: [

@@ -24,6 +24,7 @@ export type Product = {
   cooler_type: string
   product_title: string
   memory_size_gb: number
+  special_features: string
   retailer: string
   url: string
   fetched_at: string
