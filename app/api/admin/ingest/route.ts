@@ -178,6 +178,16 @@ export async function POST(request: NextRequest) {
     const products = []
     const errors = []
 
+    if (!Array.isArray(firecrawlData.data.results)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Invalid response format from Firecrawl',
+        },
+        { status: 500 }
+      )
+    }
+
     for (const result of firecrawlData.data.results) {
       try {
         const extracted = result.extract || result.json
@@ -195,35 +205,39 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Insert products into Supabase
-    if (products.length > 0) {
-      const { error: insertError } = await supabase
-        .from('products')
-        .insert(products)
+    // If no products were extracted, return error
+    if (products.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'No products could be extracted from the provided URLs',
+          errors,
+        },
+        { status: 400 }
+      )
+    }
 
-      if (insertError) {
-        errors.push(`Database insert error: ${insertError.message}`)
-        return NextResponse.json(
-          {
-            success: errors.length === 0,
-            message:
-              products.length > 0
-                ? `Added ${products.length} product(s)`
-                : 'Failed to add products',
-            productsAdded: products.length,
-            errors: errors.length > 0 ? errors : undefined,
-          },
-          { status: errors.length === 0 ? 200 : 207 }
-        )
-      }
+    // Insert products into Supabase
+    const { error: insertError, data: insertedData } = await supabase
+      .from('products')
+      .insert(products)
+      .select()
+
+    if (insertError) {
+      console.error('Database insert error:', insertError)
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Database error: ${insertError.message}`,
+          errors: [insertError.message, ...errors],
+        },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({
-      success: errors.length === 0,
-      message:
-        products.length > 0
-          ? `Successfully added ${products.length} product(s) to the database`
-          : 'No products could be extracted',
+      success: true,
+      message: `Successfully added ${products.length} product(s) to the database`,
       productsAdded: products.length,
       errors: errors.length > 0 ? errors : undefined,
     })
