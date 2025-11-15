@@ -1,4 +1,3 @@
 #!/bin/bash
 cd "$(dirname "$0")"
-PATH="./node_modules/.bin:$PATH"
-next dev
+./node_modules/.bin/next dev
