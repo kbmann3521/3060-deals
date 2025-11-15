@@ -1,0 +1,12 @@
+{
+  "name": "gpu-project",
+  "version": "1.0.0",
+  "description": "GPU Project",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
