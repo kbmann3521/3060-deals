@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase-client'
+import { supabaseAdmin } from '@/lib/supabase-client'
 
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY
 const FIRECRAWL_API_URL = 'https://api.firecrawl.dev/v2/extract'
@@ -285,10 +285,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Insert products into Supabase
+    // Insert products into Supabase using service role (bypasses RLS)
     console.log('Inserting', products.length, 'products into Supabase')
 
-    const { error: insertError, data: insertedData } = await supabase
+    const { error: insertError, data: insertedData } = await supabaseAdmin
       .from('products')
       .insert(products)
       .select()
