@@ -228,6 +228,9 @@ export default function Home() {
                 Brand {filters.sortBy === 'brand' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
               <th>Title</th>
+              <th onClick={() => handleSort('family')}>
+                Family {filters.sortBy === 'family' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+              </th>
               <th onClick={() => handleSort('memory_size_gb')}>
                 Memory {filters.sortBy === 'memory_size_gb' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
@@ -252,9 +255,9 @@ export default function Home() {
                   <td className="model-cell">
                     <div className="model-info">
                       <div className="model-name">{product.product_title}</div>
-                      {product.family && <div className="variant">{product.family}</div>}
                     </div>
                   </td>
+                  <td className="family-cell">{product.family || '-'}</td>
                   <td>{product.memory_size_gb}GB</td>
                   <td>{product.cooler_type}</td>
                   <td>{product.is_oc ? 'Yes' : 'No'}</td>
@@ -273,7 +276,7 @@ export default function Home() {
               ))
             ) : (
               <tr>
-                <td colSpan={8} className="no-results">
+                <td colSpan={9} className="no-results">
                   {loading ? 'Loading...' : 'No products found. Try adjusting your filters.'}
                 </td>
               </tr>
