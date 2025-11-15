@@ -59,9 +59,17 @@ async function waitForFirecrawlJob(jobId: string): Promise<ExtractedProduct[]> {
     })
 
     if (!statusResponse.ok) {
-      const errorText = await statusResponse.text()
-      console.error('Firecrawl status check failed:', errorText)
-      throw new Error(`Failed to check job status: ${statusResponse.status}`)
+      let errorMessage = `Firecrawl status check failed: ${statusResponse.status}`
+      try {
+        const errorText = await statusResponse.text()
+        console.error('Firecrawl status error:', statusResponse.status, errorText)
+        if (statusResponse.status === 402) {
+          errorMessage = 'Firecrawl account ran out of credits during processing'
+        }
+      } catch (err) {
+        console.error('Failed to read status error response:', err)
+      }
+      throw new Error(errorMessage)
     }
 
     const status: FirecrawlJobStatus = await statusResponse.json()
