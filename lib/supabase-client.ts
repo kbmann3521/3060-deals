@@ -17,18 +17,16 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
 export type Product = {
   id: string
   brand: string
-  model_name: string
-  gpu_model: string
-  variant: string
-  family?: string
-  memory_size_gb: number
+  is_oc: boolean
+  price: number
+  family: string
+  in_stock: boolean
   cooler_type: string
-  price_usd: number
-  stock_status: string
+  product_title: string
+  memory_size_gb: number
   retailer: string
   url: string
-  affiliate_url: string | null
   fetched_at: string
-  created_at: string
-  updated_at: string
+  created_at?: string
+  updated_at?: string
 }
