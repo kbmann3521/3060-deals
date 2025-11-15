@@ -1,10 +1,13 @@
 -- First, delete duplicate products keeping only the most recent one per URL
 DELETE FROM products
 WHERE id NOT IN (
-  SELECT MAX(id)
-  FROM products
-  WHERE url IS NOT NULL
-  GROUP BY url
+  SELECT id
+  FROM (
+    SELECT DISTINCT ON (url) id
+    FROM products
+    WHERE url IS NOT NULL
+    ORDER BY url, fetched_at DESC
+  ) AS latest_products
 )
 AND url IS NOT NULL;
 
