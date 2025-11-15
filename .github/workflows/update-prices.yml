@@ -1,0 +1,22 @@
+name: Update Product Prices Hourly
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Run every hour
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update-prices:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update product prices
+        run: |
+          curl -X POST ${{ secrets.PRODUCT_UPDATE_URL }} \
+            -H "Authorization: Bearer ${{ secrets.ADMIN_SECRET_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{}'
+
+      - name: Log result
+        if: always()
+        run: |
+          echo "Price update job completed"
