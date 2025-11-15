@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         urls: newUrls,
-        prompt: 'cooler_type is the number of fans ("Dual" or "Triple"). family options include: Ventus, Gaming, Twin Edge, Eagle, Windforce, Aero ITX, Phoenix, TUF, ROG Strix, XLR8, Revel, Uprising, Epic-X, AMP, AMP White, Vision, XC, XC Black, NB, BattleAx, iChill, EX, EXOC, SG, Ultra, White Edition, Sakura, Cute Edition. If none are found, use "Base" as the family.',
+        prompt: 'cooler_type is the number of fans ("dual" or "tripple"). family options include: Ventus, Gaming, Twin Edge, Eagle, Windforce, Aero ITX, Phoenix, TUF, ROG Strix, XLR8, Revel, Uprising, Epic-X, AMP, AMP White, Vision, XC, XC Black, NB, BattleAx, iChill, EX, EXOC, SG, Ultra, White Edition, Sakura, Cute Edition. If none are found, use "Base" as the family.',
         schema: {
           type: 'object',
           properties: {
@@ -200,7 +200,7 @@ export async function POST(request: NextRequest) {
             },
             cooler_type: {
               type: 'string',
-              enum: ['dual', 'triple'],
+              enum: ['Dual', 'Triple'],
               description: 'Number of fans: dual or triple',
             },
             product_title: {
