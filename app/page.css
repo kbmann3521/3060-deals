@@ -48,37 +48,42 @@
 
 .filters-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-bottom: 40px;
-  padding: 28px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 0;
+  padding: 16px;
   background: #161b22;
-  border-radius: 8px;
+  border-radius: 8px 8px 0 0;
   border: 1px solid #30363d;
+  border-bottom: none;
+  align-items: flex-end;
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .filter-group label {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #e6edf3;
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .filter-select,
 .filter-input {
-  padding: 10px 12px;
+  padding: 8px 10px;
   border: 1px solid #30363d;
   border-radius: 6px;
-  font-size: 0.9375rem;
+  font-size: 0.8125rem;
   font-family: inherit;
   background-color: #0d1117;
   color: #e6edf3;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
+  height: 36px;
 }
 
 .filter-select option {
@@ -86,43 +91,57 @@
   color: #e6edf3;
 }
 
+.filter-select:hover,
+.filter-input:hover {
+  border-color: #58a6ff;
+  background-color: #0d1117;
+}
+
 .filter-select:focus,
 .filter-input:focus {
   outline: none;
   border-color: #58a6ff;
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.15);
 }
 
 .price-inputs {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 }
 
 .filter-input {
   flex: 1;
+  min-width: 0;
 }
 
 .price-separator {
   color: #6e7681;
   font-weight: 500;
+  font-size: 0.75rem;
+  flex-shrink: 0;
 }
 
 .reset-button {
-  padding: 10px 16px;
-  background-color: #1c2128;
+  padding: 8px 12px;
+  background-color: transparent;
   border: 1px solid #30363d;
   border-radius: 6px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #e6edf3;
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: #8b949e;
   transition: all 0.2s;
   align-self: flex-end;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  height: 36px;
 }
 
 .reset-button:hover {
-  background-color: #262c36;
+  background-color: #1c2128;
   border-color: #58a6ff;
+  color: #58a6ff;
 }
 
 .loading-message {
@@ -136,8 +155,9 @@
   overflow-x: auto;
   margin-bottom: 32px;
   background: #161b22;
-  border-radius: 8px;
+  border-radius: 0 0 8px 8px;
   border: 1px solid #30363d;
+  border-top: none;
 }
 
 .products-table {
