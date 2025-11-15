@@ -30,11 +30,13 @@ interface FirecrawlJobStatus {
 }
 
 function mapFirecrawlToProduct(extracted: ExtractedProduct, url: string) {
+  // Only map the fields that exist in the products table schema
+  // Omit: is_oc, family, in_stock, product_title (these are extra Firecrawl fields)
   return {
     brand: extracted.brand,
     model_name: extracted.product_title,
     gpu_model: 'RTX 3060',
-    variant: extracted.family,
+    variant: extracted.family, // Use family as variant
     memory_size_gb: extracted.memory_size_gb,
     cooler_type: extracted.cooler_type,
     price_usd: extracted.price,
