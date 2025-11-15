@@ -234,18 +234,9 @@
   color: #58a6ff;
 }
 
-.model-cell {
-  max-width: 200px;
-}
-
-.model-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.model-name {
+.retailer-cell {
   font-weight: 500;
+  color: #c9d1d9;
 }
 
 .family-cell {
