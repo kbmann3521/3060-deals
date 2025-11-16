@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const memory_size_gb = searchParams.get('memory_size_gb') || ''
     const cooler_type = searchParams.get('cooler_type') || ''
     const is_oc = searchParams.get('is_oc') || ''
+    const is_ti = searchParams.get('is_ti') || ''
     const family = searchParams.get('family') || ''
     const special_features = searchParams.get('special_features') || ''
     const sortBy = searchParams.get('sortBy') || 'price'
