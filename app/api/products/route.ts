@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const memory_size_gb = searchParams.get('memory_size_gb') || ''
     const cooler_type = searchParams.get('cooler_type') || ''
     const is_oc = searchParams.get('is_oc') || ''
+    const is_ti = searchParams.get('is_ti') || ''
     const family = searchParams.get('family') || ''
     const special_features = searchParams.get('special_features') || ''
     const sortBy = searchParams.get('sortBy') || 'price'
@@ -31,6 +32,7 @@ export async function GET(request: NextRequest) {
     if (cooler_type) query = query.eq('cooler_type', cooler_type)
     if (family) query = query.eq('family', family)
     if (is_oc) query = query.eq('is_oc', is_oc === 'true')
+    if (is_ti) query = query.eq('is_ti', is_ti === 'true')
     if (special_features) query = query.ilike('special_features', `%${special_features}%`)
 
     // Apply sorting

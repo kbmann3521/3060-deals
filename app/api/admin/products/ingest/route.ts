@@ -14,12 +14,21 @@ const FAMILIES = [
   'EXOC', 'SG', 'Ultra', 'White Edition', 'Sakura', 'Cute Edition', 'Trio'
 ]
 
+function normalizeCoolerType(coolerType: string): string {
+  if (!coolerType) return ''
+  const normalized = coolerType.toLowerCase()
+  if (normalized === 'dual' || normalized === '2') return 'Dual'
+  if (normalized === 'triple' || normalized === '3') return 'Triple'
+  return coolerType
+}
+
 const EXTRACTION_PROMPT = `Extract GPU product information from the page. Return JSON with these fields:
 - brand: GPU brand (NVIDIA, AMD, Intel, etc)
 - model_name: Model name (RTX 3060, RTX 4070, etc)
 - variant: Full product variant name
 - memory_size_gb: VRAM in GB (number)
 - cooler_type: Number of fans (integer, e.g., 2 or 3)
+- is_ti: Boolean - true only if the product is explicitly a Ti variant (e.g., "RTX 3060 Ti")
 - family: Product family. Must be one of: ${FAMILIES.join(', ')}
 - price_usd: Price in USD (number, remove currency symbols)
 - stock_status: Either "In Stock" or "Out of Stock"
@@ -63,6 +72,7 @@ export async function POST(request: NextRequest) {
             variant: { type: 'string' },
             memory_size_gb: { type: 'number' },
             cooler_type: { type: 'number' },
+            is_ti: { type: 'boolean' },
             family: { type: 'string' },
             price_usd: { type: 'number' },
             stock_status: { type: 'string' },
@@ -92,7 +102,8 @@ export async function POST(request: NextRequest) {
       variant: (extractedData.variant || '').trim(),
       family: (extractedData.family || '').trim(),
       memory_size_gb: parseInt(extractedData.memory_size_gb) || 0,
-      cooler_type: (extractedData.cooler_type || '').toString().trim(),
+      cooler_type: normalizeCoolerType((extractedData.cooler_type || '').toString()),
+      is_ti: extractedData.is_ti || false,
       price_usd: parseFloat(extractedData.price_usd) || 0,
       stock_status: (extractedData.stock_status || '').trim(),
       retailer: (extractedData.retailer || '').trim(),

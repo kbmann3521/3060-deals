@@ -4,6 +4,14 @@ import { useEffect, useState } from 'react'
 import { Product } from '@/lib/supabase-client'
 import './page.css'
 
+function normalizeCoolerType(coolerType: string): string {
+  if (!coolerType) return ''
+  const normalized = coolerType.toLowerCase()
+  if (normalized === 'dual') return 'Dual'
+  if (normalized === 'triple') return 'Triple'
+  return coolerType
+}
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
@@ -13,6 +21,7 @@ export default function Home() {
     memory_size_gb: '',
     cooler_type: '',
     is_oc: '',
+    is_ti: '',
     family: '',
     special_features: '',
     sortBy: 'price',
@@ -51,7 +60,7 @@ export default function Home() {
         data.products.forEach((product: Product) => {
           if (product.brand) brands.add(product.brand)
           if (product.memory_size_gb) memories.add(product.memory_size_gb)
-          if (product.cooler_type) coolerTypes.add(product.cooler_type)
+          if (product.cooler_type) coolerTypes.add(normalizeCoolerType(product.cooler_type))
           if (product.family) families.add(product.family)
           if (product.special_features) {
             // Split comma-separated special features for filtering
@@ -115,6 +124,7 @@ export default function Home() {
       memory_size_gb: '',
       cooler_type: '',
       is_oc: '',
+      is_ti: '',
       family: '',
       special_features: '',
       sortBy: 'price',
@@ -208,6 +218,19 @@ export default function Home() {
         </div>
 
         <div className="filter-group">
+          <label>Ti Variant</label>
+          <select
+            value={filters.is_ti}
+            onChange={(e) => handleFilterChange('is_ti', e.target.value)}
+            className="filter-select"
+          >
+            <option value="">All</option>
+            <option value="true">Ti Only</option>
+            <option value="false">Non-Ti Only</option>
+          </select>
+        </div>
+
+        <div className="filter-group">
           <label>Family</label>
           <select
             value={filters.family}
@@ -272,6 +295,9 @@ export default function Home() {
               <th onClick={() => handleSort('is_oc')}>
                 OC {filters.sortBy === 'is_oc' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
+              <th onClick={() => handleSort('is_ti')}>
+                Ti {filters.sortBy === 'is_ti' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+              </th>
               <th onClick={() => handleSort('price')}>
                 Price {filters.sortBy === 'price' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
@@ -287,8 +313,9 @@ export default function Home() {
                   <td className="retailer-cell">{product.retailer}</td>
                   <td className="family-cell">{product.family || '-'}</td>
                   <td>{product.memory_size_gb}GB</td>
-                  <td>{product.cooler_type}</td>
+                  <td>{normalizeCoolerType(product.cooler_type)}</td>
                   <td>{product.is_oc ? 'Yes' : 'No'}</td>
+                  <td>{product.is_ti ? 'Yes' : 'No'}</td>
                   <td className="price-cell">${product.price.toFixed(2)}</td>
                   <td>
                     <span className={`stock-badge ${product.in_stock ? 'in-stock' : 'out-of-stock'}`}>
@@ -304,7 +331,7 @@ export default function Home() {
               ))
             ) : (
               <tr>
-                <td colSpan={9} className="no-results">
+                <td colSpan={10} className="no-results">
                   {loading ? 'Loading...' : 'No products found. Try adjusting your filters.'}
                 </td>
               </tr>

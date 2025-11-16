@@ -18,6 +18,7 @@ export type Product = {
   id: string
   brand: string
   is_oc: boolean
+  is_ti: boolean
   price: number
   family: string
   in_stock: boolean

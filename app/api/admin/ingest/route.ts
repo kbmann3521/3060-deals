@@ -9,6 +9,7 @@ const FIRECRAWL_POLL_TIMEOUT = 600000 // 10 minutes
 interface ExtractedProduct {
   brand: string
   is_oc: boolean
+  is_ti: boolean
   price: number
   family: string
   in_stock: boolean
@@ -35,10 +36,11 @@ function mapFirecrawlToProduct(extracted: ExtractedProduct, url: string) {
   return {
     brand: extracted.brand,
     is_oc: extracted.is_oc,
+    is_ti: extracted.is_ti,
     price: extracted.price,
     family: extracted.family,
     in_stock: extracted.in_stock,
-    cooler_type: extracted.cooler_type,
+    cooler_type: normalizeCoolerType(extracted.cooler_type),
     product_title: extracted.product_title,
     memory_size_gb: extracted.memory_size_gb,
     special_features: extracted.special_features,
@@ -46,6 +48,14 @@ function mapFirecrawlToProduct(extracted: ExtractedProduct, url: string) {
     url: url,
     fetched_at: new Date().toISOString(),
   }
+}
+
+function normalizeCoolerType(coolerType: string): string {
+  if (!coolerType) return ''
+  const normalized = coolerType.toLowerCase()
+  if (normalized === 'dual') return 'Dual'
+  if (normalized === 'triple') return 'Triple'
+  return coolerType
 }
 
 async function waitForFirecrawlJob(jobId: string): Promise<ExtractedProduct[]> {
@@ -176,7 +186,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         urls: newUrls,
-        prompt: 'cooler_type is the number of fans ("dual" or "tripple"). family options include: Ventus, Gaming, Twin Edge, Eagle, Windforce, Aero ITX, Phoenix, TUF, ROG Strix, XLR8, Revel, Uprising, Epic-X, AMP, AMP White, Vision, XC, XC Black, NB, BattleAx, iChill, EX, EXOC, SG, Ultra, White Edition, Sakura, Cute Edition. If no family is found, use "Base" as the family. special_features include: IceStorm, IceStorm 2.0, FireStorm Software, FREEZE Fan Stop, Active Fan Control, Axial-Tech Fans, 0dB Technology, MaxContact, AURA Sync RGB, Dual BIOS, Torx Fan 3.0, Torx Fan 4.0, Twin Frozr, Zero Frozr, TRI FROZR 2, Core Pipe, Mystic Light RGB, Windforce Cooling, Alternate Spinning, 3D Active Fan, Screen Cooling, RGB Fusion, EPIC-X RGB, iGame Center, FrostBlade Fans. If no special features found, use None',
+        prompt: 'cooler_type is the number of fans ("dual" or "tripple"). is_ti should be true only if the product title explicitly contains "3060 Ti" (RTX 3060 Ti variant), otherwise false. family options include: Ventus, Gaming, Twin Edge, Eagle, Windforce, Aero ITX, Phoenix, TUF, ROG Strix, XLR8, Revel, Uprising, Epic-X, AMP, AMP White, Vision, XC, XC Black, NB, BattleAx, iChill, EX, EXOC, SG, Ultra, White Edition, Sakura, Cute Edition. If no family is found, use "Base" as the family. special_features include: IceStorm, IceStorm 2.0, FireStorm Software, FREEZE Fan Stop, Active Fan Control, Axial-Tech Fans, 0dB Technology, MaxContact, AURA Sync RGB, Dual BIOS, Torx Fan 3.0, Torx Fan 4.0, Twin Frozr, Zero Frozr, TRI FROZR 2, Core Pipe, Mystic Light RGB, Windforce Cooling, Alternate Spinning, 3D Active Fan, Screen Cooling, RGB Fusion, EPIC-X RGB, iGame Center, FrostBlade Fans. If no special features found, use None',
         schema: {
           type: 'object',
           properties: {
@@ -187,6 +197,10 @@ export async function POST(request: NextRequest) {
             is_oc: {
               type: 'boolean',
               description: 'Whether the card is overclocked',
+            },
+            is_ti: {
+              type: 'boolean',
+              description: 'Whether the card is a Ti variant (e.g., RTX 3060 Ti)',
             },
             price: {
               type: 'number',
