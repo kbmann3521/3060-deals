@@ -218,6 +218,19 @@ export default function Home() {
         </div>
 
         <div className="filter-group">
+          <label>Ti Variant</label>
+          <select
+            value={filters.is_ti}
+            onChange={(e) => handleFilterChange('is_ti', e.target.value)}
+            className="filter-select"
+          >
+            <option value="">All</option>
+            <option value="true">Ti Only</option>
+            <option value="false">Non-Ti Only</option>
+          </select>
+        </div>
+
+        <div className="filter-group">
           <label>Family</label>
           <select
             value={filters.family}
