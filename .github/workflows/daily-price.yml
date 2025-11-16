@@ -1,4 +1,4 @@
-name: Daily Price Update
+name: Daily Price Update (v4)
 
 on:
   schedule:
