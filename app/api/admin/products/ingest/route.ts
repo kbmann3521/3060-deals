@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       variant: (extractedData.variant || '').trim(),
       family: (extractedData.family || '').trim(),
       memory_size_gb: parseInt(extractedData.memory_size_gb) || 0,
-      cooler_type: (extractedData.cooler_type || '').toString().trim(),
+      cooler_type: normalizeCoolerType((extractedData.cooler_type || '').toString()),
       price_usd: parseFloat(extractedData.price_usd) || 0,
       stock_status: (extractedData.stock_status || '').trim(),
       retailer: (extractedData.retailer || '').trim(),
