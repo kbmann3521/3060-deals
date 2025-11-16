@@ -14,6 +14,14 @@ const FAMILIES = [
   'EXOC', 'SG', 'Ultra', 'White Edition', 'Sakura', 'Cute Edition', 'Trio'
 ]
 
+function normalizeCoolerType(coolerType: string): string {
+  if (!coolerType) return ''
+  const normalized = coolerType.toLowerCase()
+  if (normalized === 'dual' || normalized === '2') return 'Dual'
+  if (normalized === 'triple' || normalized === '3') return 'Triple'
+  return coolerType
+}
+
 const EXTRACTION_PROMPT = `Extract GPU product information from the page. Return JSON with these fields:
 - brand: GPU brand (NVIDIA, AMD, Intel, etc)
 - model_name: Model name (RTX 3060, RTX 4070, etc)
