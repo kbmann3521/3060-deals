@@ -36,6 +36,7 @@ function mapFirecrawlToProduct(extracted: ExtractedProduct, url: string) {
   return {
     brand: extracted.brand,
     is_oc: extracted.is_oc,
+    is_ti: extracted.is_ti,
     price: extracted.price,
     family: extracted.family,
     in_stock: extracted.in_stock,
