@@ -4,6 +4,14 @@ import { useEffect, useState } from 'react'
 import { Product } from '@/lib/supabase-client'
 import './page.css'
 
+function normalizeCoolerType(coolerType: string): string {
+  if (!coolerType) return ''
+  const normalized = coolerType.toLowerCase()
+  if (normalized === 'dual') return 'Dual'
+  if (normalized === 'triple') return 'Triple'
+  return coolerType
+}
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
