@@ -331,7 +331,7 @@ export default function Home() {
               ))
             ) : (
               <tr>
-                <td colSpan={9} className="no-results">
+                <td colSpan={10} className="no-results">
                   {loading ? 'Loading...' : 'No products found. Try adjusting your filters.'}
                 </td>
               </tr>
