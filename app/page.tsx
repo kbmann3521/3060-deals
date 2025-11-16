@@ -287,7 +287,7 @@ export default function Home() {
                   <td className="retailer-cell">{product.retailer}</td>
                   <td className="family-cell">{product.family || '-'}</td>
                   <td>{product.memory_size_gb}GB</td>
-                  <td>{product.cooler_type}</td>
+                  <td>{normalizeCoolerType(product.cooler_type)}</td>
                   <td>{product.is_oc ? 'Yes' : 'No'}</td>
                   <td className="price-cell">${product.price.toFixed(2)}</td>
                   <td>
