@@ -38,7 +38,7 @@ function mapFirecrawlToProduct(extracted: ExtractedProduct, url: string) {
     price: extracted.price,
     family: extracted.family,
     in_stock: extracted.in_stock,
-    cooler_type: extracted.cooler_type,
+    cooler_type: normalizeCoolerType(extracted.cooler_type),
     product_title: extracted.product_title,
     memory_size_gb: extracted.memory_size_gb,
     special_features: extracted.special_features,
@@ -46,6 +46,14 @@ function mapFirecrawlToProduct(extracted: ExtractedProduct, url: string) {
     url: url,
     fetched_at: new Date().toISOString(),
   }
+}
+
+function normalizeCoolerType(coolerType: string): string {
+  if (!coolerType) return ''
+  const normalized = coolerType.toLowerCase()
+  if (normalized === 'dual') return 'Dual'
+  if (normalized === 'triple') return 'Triple'
+  return coolerType
 }
 
 async function waitForFirecrawlJob(jobId: string): Promise<ExtractedProduct[]> {
