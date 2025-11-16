@@ -315,6 +315,7 @@ export default function Home() {
                   <td>{product.memory_size_gb}GB</td>
                   <td>{normalizeCoolerType(product.cooler_type)}</td>
                   <td>{product.is_oc ? 'Yes' : 'No'}</td>
+                  <td>{product.is_ti ? 'Yes' : 'No'}</td>
                   <td className="price-cell">${product.price.toFixed(2)}</td>
                   <td>
                     <span className={`stock-badge ${product.in_stock ? 'in-stock' : 'out-of-stock'}`}>
