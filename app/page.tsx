@@ -59,7 +59,7 @@ export default function Home() {
         data.products.forEach((product: Product) => {
           if (product.brand) brands.add(product.brand)
           if (product.memory_size_gb) memories.add(product.memory_size_gb)
-          if (product.cooler_type) coolerTypes.add(product.cooler_type)
+          if (product.cooler_type) coolerTypes.add(normalizeCoolerType(product.cooler_type))
           if (product.family) families.add(product.family)
           if (product.special_features) {
             // Split comma-separated special features for filtering
