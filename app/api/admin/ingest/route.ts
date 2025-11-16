@@ -9,6 +9,7 @@ const FIRECRAWL_POLL_TIMEOUT = 600000 // 10 minutes
 interface ExtractedProduct {
   brand: string
   is_oc: boolean
+  is_ti: boolean
   price: number
   family: string
   in_stock: boolean
