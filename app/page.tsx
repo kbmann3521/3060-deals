@@ -295,6 +295,9 @@ export default function Home() {
               <th onClick={() => handleSort('is_oc')}>
                 OC {filters.sortBy === 'is_oc' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
+              <th onClick={() => handleSort('is_ti')}>
+                Ti {filters.sortBy === 'is_ti' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
+              </th>
               <th onClick={() => handleSort('price')}>
                 Price {filters.sortBy === 'price' && (filters.sortOrder === 'asc' ? '↑' : '↓')}
               </th>
