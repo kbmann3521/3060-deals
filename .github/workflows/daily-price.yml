@@ -1,8 +1,8 @@
 name: Daily Price Update (v4)
 
 on:
-  schedule:
-    - cron: '0 6 * * *'  # Run every day at 6 AM UTC
+  # schedule:
+  #   - cron: '0 6 * * *'  # Run every day at 6 AM UTC (disabled - use manual trigger)
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
