@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
     if (cooler_type) query = query.eq('cooler_type', cooler_type)
     if (family) query = query.eq('family', family)
     if (is_oc) query = query.eq('is_oc', is_oc === 'true')
+    if (is_ti) query = query.eq('is_ti', is_ti === 'true')
     if (special_features) query = query.ilike('special_features', `%${special_features}%`)
 
     // Apply sorting
