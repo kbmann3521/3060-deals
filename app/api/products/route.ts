@@ -8,13 +8,12 @@ export async function GET(request: NextRequest) {
     // Get search and filter parameters
     const search = searchParams.get('search') || ''
     const brand = searchParams.get('brand') || ''
-    const memory = searchParams.get('memory') || ''
-    const minPrice = searchParams.get('minPrice') || ''
-    const maxPrice = searchParams.get('maxPrice') || ''
-    const coolerType = searchParams.get('coolerType') || ''
-    const stockStatus = searchParams.get('stockStatus') || ''
-    const retailer = searchParams.get('retailer') || ''
-    const sortBy = searchParams.get('sortBy') || 'price_usd'
+    const memory_size_gb = searchParams.get('memory_size_gb') || ''
+    const cooler_type = searchParams.get('cooler_type') || ''
+    const is_oc = searchParams.get('is_oc') || ''
+    const family = searchParams.get('family') || ''
+    const special_features = searchParams.get('special_features') || ''
+    const sortBy = searchParams.get('sortBy') || 'price'
     const sortOrder = searchParams.get('sortOrder') || 'asc'
 
     let query = supabase.from('products').select('*')
@@ -22,20 +21,17 @@ export async function GET(request: NextRequest) {
     // Apply search filter
     if (search) {
       query = query.or(
-        `brand.ilike.%${search}%,model_name.ilike.%${search}%,variant.ilike.%${search}%`
+        `brand.ilike.%${search}%,product_title.ilike.%${search}%,family.ilike.%${search}%`
       )
     }
 
     // Apply exact filters
     if (brand) query = query.eq('brand', brand)
-    if (memory) query = query.eq('memory_size_gb', parseInt(memory))
-    if (coolerType) query = query.eq('cooler_type', coolerType)
-    if (stockStatus) query = query.eq('stock_status', stockStatus)
-    if (retailer) query = query.eq('retailer', retailer)
-
-    // Apply price range
-    if (minPrice) query = query.gte('price_usd', parseFloat(minPrice))
-    if (maxPrice) query = query.lte('price_usd', parseFloat(maxPrice))
+    if (memory_size_gb) query = query.eq('memory_size_gb', parseInt(memory_size_gb))
+    if (cooler_type) query = query.eq('cooler_type', cooler_type)
+    if (family) query = query.eq('family', family)
+    if (is_oc) query = query.eq('is_oc', is_oc === 'true')
+    if (special_features) query = query.ilike('special_features', `%${special_features}%`)
 
     // Apply sorting
     const order = sortOrder === 'desc'
