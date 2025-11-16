@@ -124,6 +124,7 @@ export default function Home() {
       memory_size_gb: '',
       cooler_type: '',
       is_oc: '',
+      is_ti: '',
       family: '',
       special_features: '',
       sortBy: 'price',
