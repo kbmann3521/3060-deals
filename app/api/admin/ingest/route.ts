@@ -198,6 +198,10 @@ export async function POST(request: NextRequest) {
               type: 'boolean',
               description: 'Whether the card is overclocked',
             },
+            is_ti: {
+              type: 'boolean',
+              description: 'Whether the card is a Ti variant (e.g., RTX 3060 Ti)',
+            },
             price: {
               type: 'number',
               description: 'Price in USD',
